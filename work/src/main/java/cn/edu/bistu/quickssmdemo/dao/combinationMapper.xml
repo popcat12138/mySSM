@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.ICombinationDao">
+    <insert id="addCom" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.CombinationEntity" >
+INSERT INTO combination (combName,otherName,recipe,functions,pre_method,`usages`) VALUES (#{combName},#{otherName},#{recipe},#{functions},#{pre_method},#{usages})
+</insert>
+    <select id="findComById" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CombinationEntity">
+select * from combination where id=#{id}
+</select>
+    <update id="updateComInfo">
+        update combination
+        <set>
+            <if test="combName !=null and combName !=''">
+                combName = #{combName},
+            </if>
+            <if test="otherName !=null and otherName !=''">
+                otherName = #{otherName},
+            </if>
+            <if test="recipe !=null and recipe !=''">
+                recipe = #{recipe},
+            </if>
+            <if test="functions !=null and functions !=''">
+                functions = #{functions},
+            </if>
+            <if test="pre_method !=null and pre_method !=''">
+                pre_method= #{pre_method},
+            </if>
+            <if test="usages !=null and usages !=''">
+                usages = #{usages},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findPage" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CombinationEntity">
+        select * from combination
+        <where>
+            <if test="combName !=null and combName !=''">
+                and combName like concat('%',#{combName},'%')
+            </if>
+            <if test="userId !=null">
+                and id in (select collectId from collect where userId=#{userId} and `type`=3)
+            </if>
+            <if test="state !=null and state !=''">
+                <foreach collection="recipeList" item="item" index="index"  open="(" separator="and" close=")">
+
+                    recipe LIKE CONCAT('%',#{item},'%')
+                </foreach>
+            </if>
+
+        </where>
+        limit #{arg0},#{arg1}
+    </select>
+
+    <select id="findPageTotal" parameterType="Integer" resultType="Integer">
+        select count(*) from combination
+        <where>
+            <if test="combName !=null and combName !=''">
+                and combName like concat('%',#{combName},'%')
+            </if>
+            <if test="userId !=null">
+                and id in (select collectId from collect where userId=#{userId} and `type`=3)
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteComById">
+        delete from combination where id=#{id};
+    </delete>
+
+</mapper>

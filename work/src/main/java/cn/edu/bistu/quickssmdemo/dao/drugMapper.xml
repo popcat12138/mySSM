@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.IDrugDao">
+    <insert id="addDrug" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.DrugEntity" >
+INSERT INTO drugtable (drugName,otherName,type,source,area,feature,taste,functions,`usage`,img) VALUES (#{drugName},#{otherName},#{type},#{source},#{area},#{feature},#{taste},#{functions},#{usage},#{img});
+</insert>
+    <select id="findDrugById" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.DrugEntity">
+select * from drugtable where id=#{id}
+</select>
+    <update id="updateDrugInfo">
+        update drugtable
+        <set>
+            <if test="drugName !=null and drugName !=''">
+                drugName = #{drugName},
+            </if>
+            <if test="otherName !=null and otherName !=''">
+                otherName = #{otherName},
+            </if>
+            <if test="type !=null and type !=''">
+                `type` = #{type},
+            </if>
+            <if test="source !=null and source !=''">
+                source = #{source},
+            </if>
+            <if test="area !=null and area !=''">
+                area = #{area},
+            </if>
+            <if test="feature !=null and feature !=''">
+                feature= #{feature},
+            </if>
+            <if test="taste !=null and taste !=''">
+                taste = #{taste},
+            </if>
+            <if test="functions !=null and functions !=''">
+                functions = #{functions},
+            </if>
+            <if test="usage !=null and usage !=''">
+                usage = #{usage},
+            </if>
+            <if test="img !=null and img !=''">
+                img = #{img},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findPage" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.DrugEntity">
+        select * from drugtable
+        <where>
+            <if test="drugName !=null and drugName !=''">
+                and drugName like concat('%',#{drugName},'%')
+            </if>
+            <if test="type !=null and type !=''">
+                and `type` like concat('%',#{type},'%')
+            </if>
+            <if test="userId !=null">
+                and id in (select collectId from collect where userId=#{userId} and `type`=4)
+            </if>
+        </where>
+        limit #{arg0},#{arg1}
+    </select>
+
+    <select id="findPageTotal" parameterType="Integer" resultType="Integer">
+        select count(*) from drugtable
+        <where>
+            <if test="drugName !=null and drugName !=''">
+                and drugName like concat('%',#{drugName},'%')
+            </if>
+            <if test="userId !=null">
+                 and id in (select collectId from collect where userId=#{userId} and `type`=4)
+            </if>
+        </where>
+    </select>
+    <delete id="deleteDrugById">
+        delete from drugtable where id=#{id};
+    </delete>
+
+</mapper>

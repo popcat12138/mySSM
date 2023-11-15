@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.ICollectDao">
+    <insert id="addCollect" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.CollectEntity" >
+INSERT INTO collect (userId,type,collectId) VALUES (#{userId},#{type},#{collectId});
+</insert>
+    <delete id="deleteCollect"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.CollectEntity">
+        delete from collect where userId=#{userId} and `type`=#{type} and collectId=#{collectId};
+    </delete>
+    <select id="enableCollect" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CollectEntity">
+    select * from collect where userId=#{userId} and `type`=#{type} and collectId=#{collectId} limit 1;
+    </select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.IBookDao">
+    <select id="findBookById" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.BookEntity">
+    select * from booktable where id=#{id};
+    </select>
+    <update id="updateBookInfo">
+        update booktable
+        <set>
+            <if test="title !=null and title !=''">
+                title = #{title},
+            </if>
+            <if test="fileLocation !=null and fileLocation !=''">
+                fileLocation = #{fileLocation},
+            </if>
+            <if test="type !=null and type !=''">
+                type = #{type},
+            </if>
+            <if test="briefInfo !=null and briefInfo !=''">
+                briefInfo = #{briefInfo},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findPage" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.BookEntity">
+        select * from booktable
+        <where>
+            <if test="title !=null and title !=''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="type !=null and type !=''">
+                and type like concat('%',#{type},'%')
+            </if>
+            <if test="userId !=null">
+                and id in (select collectId from collect where userId=#{userId} and `type`=1)
+            </if>
+        </where>
+        limit #{arg0},#{arg1}
+    </select>
+
+    <select id="findPageTotal" parameterType="Integer" resultType="Integer">
+        select count(*) from booktable
+        <where>
+            <if test="title !=null and title !=''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="userId !=null">
+                and id in (select collectId from collect where userId=#{userId} and `type`=1)
+            </if>
+        </where>
+    </select>
+
+    <insert id="addBook" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.BookEntity" >
+INSERT INTO booktable (title,fileLocation,type,briefInfo) VALUES (#{title},#{fileLocation},#{type},#{briefInfo});
+</insert>
+
+    <delete id="deleteBookById">
+        delete from booktable where id=#{id};
+    </delete>
+
+    <select id="findMoreCollect" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.BookEntity">
+        select * from booktable where id in (select a.* from(SELECT collectId FROM collect WHERE `type`=1 GROUP BY collectId ORDER BY COUNT(*) DESC LIMIT 0,3) a)
+    </select>
+</mapper>

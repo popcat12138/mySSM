@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.IUserDao">
+    <select id="findUserByUserName" parameterType="String"
+            resultType="cn.edu.bistu.quickssmdemo.entity.UserEntity">
+select * from user where userName=#{userName} limit 1;
+</select>
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.UserEntity" >
+INSERT INTO user VALUES (0,#{userName},#{userAge})
+</insert>
+    <select id="findUserById" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.UserEntity">
+select * from user where id=#{id}
+</select>
+    <update id="updateUserInfo">
+        update user
+        <set>
+            <if test="userName !=null and userName !=''">
+                userName = #{userName},
+            </if>
+            <if test="phoneNum !=null and phoneNum !=0">
+                phoneNum = #{phoneNum},
+            </if>
+            <if test="role !=null and role !=''">
+                role = #{role},
+            </if>
+            <if test="email !=null and email !=''">
+                Email = #{email},
+            </if>
+            <if test="password !=null and password !=''">
+                password = #{password},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findPage" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.UserEntity">
+        select * from user
+        <where>
+            <if test="userName !=null and userName !=''">
+                and userName like concat('%',#{userName},'%')
+            </if>
+        </where>
+        limit #{arg0},#{arg1}
+    </select>
+
+    <select id="findPageTotal" parameterType="Integer" resultType="Integer">
+        select count(*) from user
+        <where>
+            <if test="userName !=null and userName !=''">
+                and userName like concat('%',#{userName},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="registerUser" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.UserEntity" >
+INSERT INTO user (userName,phoneNum,password,role,Email) VALUES (#{userName},#{phoneNum},#{password},#{role},#{email});
+</insert>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--mapper 目录-->
+<mapper namespace="cn.edu.bistu.quickssmdemo.dao.ICaseDao">
+    <insert id="addCase" useGeneratedKeys="true" keyProperty="caseId"
+            parameterType="cn.edu.bistu.quickssmdemo.entity.CaseEntity" >
+INSERT INTO casetable (caseTitle,caseInfo,caseDetail,caseSelf,caseCheck,caseResult,caseProcess,caseOther) VALUES (#{caseTitle},#{caseInfo},#{caseDetail},#{caseSelf},#{caseCheck},#{caseResult},#{caseProcess},#{caseOther})
+</insert>
+    <select id="findCaseById" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CaseEntity">
+select * from casetable where caseId=#{id}
+</select>
+    <update id="updateCaseInfo">
+        update casetable
+        <set>
+            <if test="caseTitle !=null and caseTitle !=''">
+                caseTitle = #{caseTitle},
+            </if>
+            <if test="caseCheck !=null and caseCheck !=''">
+                caseInfo = #{caseInfo},
+            </if>
+            <if test="caseResult !=null and caseResult !=''">
+                caseResult = #{caseResult},
+            </if>
+            <if test="caseProcess !=null and caseProcess !=''">
+                caseProcess = #{caseProcess},
+            </if>
+            <if test="caseOther !=null and caseOther !=''">
+                caseOther = #{caseOther},
+            </if>
+            <if test="caseInfo !=null and caseInfo !=''">
+                caseInfo = #{caseInfo},
+            </if>
+            <if test="caseDetail !=null and caseDetail !=''">
+                caseDetail = #{caseDetail},
+            </if>
+            <if test="caseSelf !=null and caseSelf !=''">
+                caseSelf = #{caseSelf},
+            </if>
+        </set>
+        where caseId = #{caseId}
+    </update>
+
+    <select id="findPage" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CaseEntity">
+        select * from casetable
+        <where>
+            <if test="caseTitle !=null and caseTitle !=''">
+                and caseTitle like concat('%',#{caseTitle},'%')
+            </if>
+            <if test="userId !=null">
+                and caseId in (select collectId from collect where userId=#{userId} and `type`=2)
+            </if>
+        </where>
+        limit #{arg0},#{arg1}
+    </select>
+
+    <select id="findPageTotal" parameterType="Integer" resultType="Integer">
+        select count(*) from casetable
+        <where>
+            <if test="caseTitle !=null and caseTitle !=''">
+                and caseTitle like concat('%',#{caseTitle},'%')
+            </if>
+            <if test="userId !=null">
+                and caseId in (select collectId from collect where userId=#{userId} and `type`=2)
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteCaseById">
+        delete from casetable where caseId=#{id};
+    </delete>
+
+    <select id="findMoreCollect" parameterType="Integer"
+            resultType="cn.edu.bistu.quickssmdemo.entity.CaseEntity">
+        select * from casetable
+       where caseId in (select a.* from(SELECT collectId FROM collect WHERE `type`=2 GROUP BY collectId ORDER BY COUNT(*) DESC LIMIT 0,3) a)
+    </select>
+</mapper>
